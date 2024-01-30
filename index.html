@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Form</title>
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+	<div class="container mt-5">
+
+		<div class="form-group">
+			<label for="aktifitas">Aktifitas:</label>
+			<select id="aktifitas" class="form-control">
+				<option selected> -- Pilih -- </option>
+				<option value="pembelian">Pembelian</option>
+				<option value="penjualan">Penjualan</option>
+				<option value="penambahan_modal">Penambahan modal</option>
+				<option value="pengambilan_laba">Pengambilan laba</option>
+				<option value="operasional_bensin">Operasional: Uang bensin</option>
+				<option value="operasional_bensin_makan">Operasional: Uang bensin + makan</option>
+			</select>
+		</div>
+
+		<input type="hidden" class="saldo" value="0" />
+
+		<div class="div-penambahan_modal" style="display:none">
+
+			<form id="form_penambahan_modal">
+
+				<div class="form-group">
+					<label for="penambahan_modal">Masuk:</label>
+					<input type="number" class="form-control" id="penambahan_modal">
+				</div>
+
+				<button type="submit" class="btn btn-primary">Kirim</button>
+
+			</form>
+
+		</div>
+
+		<div class="div-pengambilan_laba" style="display:none">
+
+			<form id="form_pengambilan_laba">
+
+				<div class="form-group">
+					<label for="pengambilan_laba">Keluar:</label>
+					<input type="number" class="form-control" id="pengambilan_laba">
+				</div>
+
+				<button type="submit" class="btn btn-primary">Kirim</button>
+
+			</form>
+
+		</div>
+
+		<div class="div-pembelian" style="display:none">
+
+			<form id="form_pembelian">
+
+				<div class="form-group">
+					<label for="pembelian-toko">Nama toko:</label>
+					<select name="pembelian-toko" class="form-control nama-toko"></select>
+				</div>
+
+				<div class="produk-table-beli"></div>
+			
+				<button type="submit" class="btn btn-primary">Kirim</button>
+
+			</form>
+
+		</div>
+
+		<div class="div-penjualan" style="display:none">
+
+			<form id="form_penjualan">
+
+				<div class="form-group">
+					<label for="penjualan-toko">Nama toko:</label>
+					<select name="penjualan-toko" class="form-control nama-toko"></select>
+				</div>
+
+				<div class="produk-table-jual"></div>
+			
+				<button type="submit" class="btn btn-primary">Kirim</button>
+
+			</form>
+
+		</div>
+
+		<div class="div-operasional_bensin" style="display:none">
+
+			<form id="form_operasional_bensin">
+
+				<div class="form-group">
+					<label for="operasional_bensin">Bensin:</label>
+					<input type="number" class="form-control" id="operasional_bensin" value="20000">
+				</div>
+
+				<button type="submit" class="btn btn-primary">Kirim</button>
+
+			</form>
+
+		</div>
+
+		<div class="div-operasional_bensin_makan" style="display:none">
+
+			<form id="form_operasional_bensin_makan">
+
+				<div class="form-group">
+					<label for="operasional_bensin_makan">Bensin + makan:</label>
+					<input type="number" class="form-control" id="operasional_bensin_makan" value="50000">
+				</div>
+
+				<button type="submit" class="btn btn-primary">Kirim</button>
+
+			</form>
+
+		</div>
+
+	</div>
+
+	<script>
+		jQuery(function($) {
+
+			$('#aktifitas').change(function() {
+				var aktifitas = $(this).val();
+
+				$('[class*="div-"]').hide();
+				$('.div-' + aktifitas).show();
+				
+			});
+
+			var form_action = 'https://docs.google.com/forms/d/e/1FAIpQLScjLaYySwtDyR6kFSaHDzvA2Bd5Bd7fubt8VsOlQ9hDVDfJaA/formResponse';
+
+			$('#form_operasional_bensin').submit(function(e) {
+				e.preventDefault();
+
+				var saldo = parseInt($('.saldo').val());
+				var keluar = parseInt($('#operasional_bensin').val());
+				var total = saldo - keluar;
+ 
+				var formDataArray = [
+					{ name: 'entry.1029124843', value: 'Operasional: Bensin' },
+					{ name: 'entry.82016512', value: keluar },
+					{ name: 'entry.1903972369', value: total },
+				];
+
+				var formData = $.param(formDataArray);
+				submitForm(formData);
+			});
+
+			$('#form_operasional_bensin_makan').submit(function(e) {
+				e.preventDefault();
+
+				var saldo = parseInt($('.saldo').val());
+				var keluar = parseInt($('#operasional_bensin_makan').val());
+				var total = saldo - keluar;
+ 
+				var formDataArray = [
+					{ name: 'entry.1029124843', value: 'Operasional: Bensin + makan' },
+					{ name: 'entry.82016512', value: keluar },
+					{ name: 'entry.1903972369', value: total },
+				];
+
+				var formData = $.param(formDataArray);
+				submitForm(formData);
+			});
+
+			$('#form_penambahan_modal').submit(function(e) {
+				e.preventDefault();
+
+				var saldo = parseInt($('.saldo').val());
+				var masuk = parseInt($('#penambahan_modal').val());
+				var total = saldo + masuk;
+ 
+				var formDataArray = [
+					{ name: 'entry.1029124843', value: 'Penambahan modal' },
+					{ name: 'entry.2026388500', value: masuk },
+					{ name: 'entry.1903972369', value: total },
+				]
+
+				var formData = $.param(formDataArray);
+				submitForm(formData);
+			});
+
+			$('#form_pengambilan_laba').submit(function(e) {
+				e.preventDefault();
+
+				var saldo = parseInt($('.saldo').val());
+				var keluar = parseInt($('#pengambilan_laba').val());
+				var total = saldo - keluar;
+ 
+				var formDataArray = [
+					{ name: 'entry.1029124843', value: 'Pengambilan laba' },
+					{ name: 'entry.82016512', value: keluar },
+					{ name: 'entry.1903972369', value: total },
+				];
+
+				var formData = $.param(formDataArray);
+				submitForm(formData);
+			});
+
+			$('#form_pembelian').submit(function(e) {
+				e.preventDefault();
+
+				var saldo = parseInt($('.saldo').val());
+
+				var all_data = [];
+
+				for (i = 0; i < $('#form_pembelian .harga-beli').length; i++) {
+					var jumlah = parseInt($('#form_pembelian .jumlah').eq(i).val());
+
+					if (jumlah > 0) {
+						var nama_produk = $('#form_pembelian .produk').eq(i).val();
+						var harga_beli = parseInt($('#form_pembelian .harga-beli').eq(i).val());
+						var keluar = harga_beli * jumlah;
+						saldo = saldo - keluar;
+
+						var formDataArray = [
+							{ name: 'entry.1029124843', value: 'Pembelian ' + nama_produk },
+							{ name: 'entry.420814254', value: $('#form_pembelian .nama-toko').val() },
+							{ name: 'entry.1675603357', value: harga_beli },
+							{ name: 'entry.1108652755', value: jumlah },
+							{ name: 'entry.82016512', value: keluar },
+							{ name: 'entry.1903972369', value: saldo },
+						]
+
+						var formData = $.param(formDataArray);
+						all_data.push(formData);
+					}
+				}
+
+				if (all_data) {
+					$.each(all_data, function (index, item) {
+						setTimeout(function () {
+							submitForm(item);
+						}, 1000 * index);
+					});
+				}
+			});
+
+			$('#form_penjualan').submit(function(e) {
+				e.preventDefault();
+
+				var saldo = parseInt($('.saldo').val());
+
+				var all_data = [];
+
+				for (i = 0; i < $('#form_penjualan .harga-jual').length; i++) {
+					var jumlah = parseInt($('#form_penjualan .jumlah').eq(i).val());
+
+					if (jumlah > 0) {
+						var nama_produk = $('#form_penjualan .produk').eq(i).val();
+						var harga_jual = parseInt($('#form_penjualan .harga-jual').eq(i).val());
+						var masuk = harga_jual * jumlah;
+						saldo = saldo + masuk;
+
+						var formDataArray = [
+							{ name: 'entry.1029124843', value: 'Penjualan ' + nama_produk },
+							{ name: 'entry.420814254', value: $('#form_penjualan .nama-toko').val() },
+							{ name: 'entry.1675603357', value: harga_jual },
+							{ name: 'entry.1108652755', value: jumlah },
+							{ name: 'entry.2026388500', value: masuk },
+							{ name: 'entry.1903972369', value: saldo },
+						]
+
+						var formData = $.param(formDataArray);
+						all_data.push(formData);
+					}
+				}
+
+				if (all_data) {
+					$.each(all_data, function (index, item) {
+						setTimeout(function () {
+							submitForm(item);
+						}, 1000 * index);
+					});
+				}
+			});
+
+			$(document).on('change, keyup', '#form_pembelian .harga-beli, #form_pembelian .jumlah', function() {
+				updateSubtotalPembelian();
+			});
+
+			function updateSubtotalPembelian() {
+				var total = 0;
+				for (i = 0; i < $('#form_pembelian .harga-beli').length; i++) {
+					var harga_beli = parseInt($('#form_pembelian .harga-beli').eq(i).val());
+					var jumlah = parseInt($('#form_pembelian .jumlah').eq(i).val());
+
+					var subtotal = harga_beli * jumlah;
+					total = total + subtotal;
+					$('#form_pembelian .subtotal').eq(i).html(subtotal);
+				}
+
+				$('#form_pembelian .total').html(total);
+			}
+
+			$(document).on('change, keyup', '#form_penjualan .harga-beli, #form_penjualan .jumlah', function() {
+				updateSubtotalPenjualan();
+			});
+			
+			function updateSubtotalPenjualan() {
+				var total = 0;
+				for (i = 0; i < $('#form_penjualan .harga-jual').length; i++) {
+					var harga_jual = parseInt($('#form_penjualan .harga-jual').eq(i).val());
+					var jumlah = parseInt($('#form_penjualan .jumlah').eq(i).val());
+
+					var subtotal = harga_jual * jumlah;
+					total = total + subtotal;
+					$('#form_penjualan .subtotal').eq(i).html(subtotal);
+				}
+
+				$('#form_penjualan .total').html(total);
+			}
+
+			function submitForm(formData) {
+				// Send AJAX request
+				$.ajax({
+                    type: "POST",
+                    url: form_action,
+                    data: formData
+                });
+			}
+		});
+		// Replace with your Google Sheets API key
+		const apiKey = 'AIzaSyAbWQVFlGp7jyyoZbKL9XX3IuTxmK3oe9c';
+
+		// Replace with your Google Sheets ID and Sheet Name
+		const spreadsheetId = '1rA_CbFD2ApQZRRyOxFp37-tkqQvW35Mus3xkSyIFnUU';
+
+		// Load the Google Sheets API client
+		function loadSheetsApi() {
+			gapi.client.load('sheets', 'v4', function() {
+
+				getSheetData('Toko!A2:A').then(function(toko) {
+					toko = toko.map(toko => toko[0]);
+					console.log(toko);
+					populateDropdown($('.nama-toko'), toko);
+				}).catch(function(error) {
+                    console.error('Error:', error);
+                });
+				
+				getSheetData('Produk!A:C').then(function(produk) {
+					console.log(produk);
+					$('.produk-table-beli').append(createTable(produk, 'beli'));
+					$('.produk-table-jual').append(createTable(produk, 'jual'));
+				}).catch(function(error) {
+                    console.error('Error:', error);
+                });
+
+				getSheetData('Laporan!H2:H').then(function(saldo) {
+					console.log(saldo);
+					const latestColumnIndex = saldo.length - 1;
+                	const latestColumnValues = saldo[latestColumnIndex];
+
+					$('.saldo').val(latestColumnValues[0]);
+				}).catch(function(error) {
+                    console.error('Error:', error);
+                });
+
+			});
+		}
+
+		// Get data from the specified Google Sheet
+		function getSheetData(sheetName) {
+			return new Promise(function(resolve, reject) {
+				gapi.client.sheets.spreadsheets.values.get({
+					spreadsheetId: spreadsheetId,
+					range: sheetName,
+					key: apiKey,
+				}).then(function(response) {
+					const values = response.result.values;
+
+					// Assuming the first column contains the data you want to read
+					if (values && values.length > 0) {
+						resolve(values);
+					} else {
+						reject('No data found in the sheet.');
+					}
+				}).catch(function(error) {
+                    reject('Error loading Google Sheets API: ' + error.message);
+                });
+			});
+		}
+
+		// Load the Google API client library
+		function handleClientLoad() {
+			gapi.load('client', loadSheetsApi);
+		}
+
+		// Function to populate dropdown options
+        function populateDropdown(dropdown, array) {
+            // Clear existing options
+            dropdown.empty();
+
+            // Loop through the array and create options
+            for (var i = 0; i < array.length; i++) {
+                var option = $("<option></option>");
+                option.val(array[i]);
+                option.text(array[i]);
+                dropdown.append(option);
+            }
+        }
+
+		// Create HTML table from 2D array using jQuery
+		function createTable(dataArray, mode) {
+            const table = $('<table class="table">');
+
+            // Create table header
+            const headerRow = $('<tr>');
+            dataArray[0].forEach(function(cellData) {
+                const headerCell = $('<th>').text(cellData);
+                headerRow.append(headerCell);
+            });
+
+			headerRow.append($('<th>').text('Jumlah'));
+			headerRow.append($('<th>').text('Subtotal'));
+
+            table.append(headerRow);
+
+            // Create table rows
+            for (let i = 1; i < dataArray.length; i++) {
+                const row = $('<tr>');
+				var j = 0;
+                dataArray[i].forEach(function(cellData) {
+					if (j == 0) {
+						cell = $('<td>').html('<input type="hidden" class="form-control produk" value="' + cellData + '">' + cellData);
+					} else if (j == 1) {
+						if (mode == 'beli') {
+							cell = $('<td>').html('<input type="number" class="form-control harga-beli" value="' + cellData + '">');
+						} else {
+							cell = $('<td>').html('<p class="text-right">' + cellData + '</p>');
+						}
+					} else if (j == 2) {
+						if (mode == 'beli') {
+							cell = $('<td>').html('<p class="text-right">' + cellData + '</p>');
+						} else {
+							cell = $('<td>').html('<input type="number" class="form-control harga-jual" value="' + cellData + '">');
+						}
+					} else {
+						cell = $('<td>').html('<p class="text-right">' + cellData + '</p>');
+					}
+                    row.append(cell);
+
+					j++;
+                });
+
+				var cell = $('<td>').html('<input type="number" class="form-control jumlah" value="0">');
+				row.append(cell);
+
+				var cell = $('<td>').html('<p class="text-right subtotal">0</p>');
+				row.append(cell);
+
+                table.append(row);
+            }
+
+			const row = $('<tr>');
+			cell = $('<td colspan="4">').html('<p class="text-right">Total</p>');
+			row.append(cell);
+			cell = $('<td>').html('<p class="text-right total">0</p>');
+			row.append(cell);
+
+			table.append(row);
+
+            return table;
+        }
+	</script>
+	<script src="https://apis.google.com/js/api.js?onload=handleClientLoad"></script>
+</body>
+</html>
+</body>
+</html>
