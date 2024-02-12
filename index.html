@@ -6,6 +6,27 @@
 	<title>Form</title>
 	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		a[href="https://static.app/"] {
+			display: none!important;
+		}
+		body, input, select {
+			font-size: 12px!important;
+			padding: 0!important;
+		}
+		.tr-produk {
+			border-bottom: none;
+		}
+		.tr-option td {
+			border-top: none;
+		}
+		td {
+			padding: 5px!important;
+		}
+		p {
+			margin-bottom: 0!important;
+		}
+	</style>
 </head>
 <body>
 	<div class="container mt-5">
@@ -34,7 +55,7 @@
 					<input type="number" class="form-control" id="penambahan_modal">
 				</div>
 
-				<button type="submit" class="btn btn-primary">Kirim</button>
+				<button type="submit" class="btn btn-primary float-right">Kirim</button>
 
 			</form>
 
@@ -49,7 +70,7 @@
 					<input type="number" class="form-control" id="pengambilan_laba">
 				</div>
 
-				<button type="submit" class="btn btn-primary">Kirim</button>
+				<button type="submit" class="btn btn-primary float-right">Kirim</button>
 
 			</form>
 
@@ -66,7 +87,7 @@
 
 				<div class="produk-table-beli"></div>
 			
-				<button type="submit" class="btn btn-primary">Kirim</button>
+				<button type="submit" class="btn btn-primary float-right">Kirim</button>
 
 			</form>
 
@@ -83,7 +104,7 @@
 
 				<div class="produk-table-jual"></div>
 			
-				<button type="submit" class="btn btn-primary">Kirim</button>
+				<button type="submit" class="btn btn-primary float-right">Kirim</button>
 
 			</form>
 
@@ -98,7 +119,7 @@
 					<input type="number" class="form-control" id="operasional_bensin" value="20000">
 				</div>
 
-				<button type="submit" class="btn btn-primary">Kirim</button>
+				<button type="submit" class="btn btn-primary float-right">Kirim</button>
 
 			</form>
 
@@ -113,7 +134,7 @@
 					<input type="number" class="form-control" id="operasional_bensin_makan" value="50000">
 				</div>
 
-				<button type="submit" class="btn btn-primary">Kirim</button>
+				<button type="submit" class="btn btn-primary float-right">Kirim</button>
 
 			</form>
 
@@ -130,6 +151,12 @@
 				$('[class*="div-"]').hide();
 				$('.div-' + aktifitas).show();
 				
+			});
+
+			$('.btn.btn-primary').on('click', function() {
+				setTimeout(function() {
+					$('.btn.btn-primary').attr('disabled', 'disabled');
+				}, 1000);
 			});
 
 			var form_action = 'https://docs.google.com/forms/d/e/1FAIpQLScjLaYySwtDyR6kFSaHDzvA2Bd5Bd7fubt8VsOlQ9hDVDfJaA/formResponse';
@@ -411,26 +438,28 @@
 
             // Create table header
             const headerRow = $('<tr>');
-            dataArray[0].forEach(function(cellData) {
-                const headerCell = $('<th>').text(cellData);
-                headerRow.append(headerCell);
-            });
-
-			headerRow.append($('<th>').text('Jumlah'));
-			headerRow.append($('<th>').text('Subtotal'));
+      
+			headerRow.append($('<th class="text-right">').text('Harga Beli'));
+			headerRow.append($('<th class="text-right">').text('Harga Jual'));
+			headerRow.append($('<th class="text-right">').text('Jumlah'));
+			headerRow.append($('<th class="text-right">').text('Subtotal'));
 
             table.append(headerRow);
 
             // Create table rows
             for (let i = 1; i < dataArray.length; i++) {
-                const row = $('<tr>');
+                const row = $('<tr class="tr-option">');
 				var j = 0;
                 dataArray[i].forEach(function(cellData) {
 					if (j == 0) {
-						cell = $('<td>').html('<input type="hidden" class="form-control produk" value="' + cellData + '">' + cellData);
+						const row2 = $('<tr class="tr-produk">');
+
+						cell = $('<td colspan="4">').html('<input type="hidden" class="form-control produk" value="' + cellData + '">' + cellData);
+						row2.append(cell);
+						table.append(row2);
 					} else if (j == 1) {
 						if (mode == 'beli') {
-							cell = $('<td>').html('<input type="number" class="form-control harga-beli" value="' + cellData + '">');
+							cell = $('<td>').html('<input type="number" class="form-control harga-beli text-right" value="' + cellData + '">');
 						} else {
 							cell = $('<td>').html('<p class="text-right">' + cellData + '</p>');
 						}
@@ -438,17 +467,20 @@
 						if (mode == 'beli') {
 							cell = $('<td>').html('<p class="text-right">' + cellData + '</p>');
 						} else {
-							cell = $('<td>').html('<input type="number" class="form-control harga-jual" value="' + cellData + '">');
+							cell = $('<td>').html('<input type="number" class="form-control harga-jual text-right" value="' + cellData + '">');
 						}
 					} else {
 						cell = $('<td>').html('<p class="text-right">' + cellData + '</p>');
 					}
-                    row.append(cell);
+
+					if (j > 0) {
+						row.append(cell);
+					}
 
 					j++;
                 });
 
-				var cell = $('<td>').html('<input type="number" class="form-control jumlah" value="0">');
+				var cell = $('<td>').html('<input type="number" class="form-control jumlah text-right" value="0">');
 				row.append(cell);
 
 				var cell = $('<td>').html('<p class="text-right subtotal">0</p>');
@@ -458,7 +490,7 @@
             }
 
 			const row = $('<tr>');
-			cell = $('<td colspan="4">').html('<p class="text-right">Total</p>');
+			cell = $('<td colspan="3">').html('<p class="text-right">Total</p>');
 			row.append(cell);
 			cell = $('<td>').html('<p class="text-right total">0</p>');
 			row.append(cell);
